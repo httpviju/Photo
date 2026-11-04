@@ -1,0 +1,6 @@
+{
+  "name": "Photo 4x6 Print",
+  "description": "Lightweight 4x6 (10x15cm) photo layout and print software with Windows 7 .NET 4.8 compatibility, wallet prints, ID formats, and 300 DPI high resolution processing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

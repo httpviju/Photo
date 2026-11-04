@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#09090B" />
+      <stop offset="100%" stop-color="#121215" />
+    </linearGradient>
+    <linearGradient id="cobaltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+  </defs>
+  <!-- Outer architectural squircle frame -->
+  <rect x="8" y="8" width="240" height="240" rx="44" fill="url(#bgGrad)" stroke="#27272A" stroke-width="6" />
+  <!-- Inner precision grid lines -->
+  <line x1="8" y1="64" x2="248" y2="64" stroke="#27272A" stroke-width="1.5" stroke-opacity="0.6" />
+  <line x1="8" y1="192" x2="248" y2="192" stroke="#27272A" stroke-width="1.5" stroke-opacity="0.6" />
+  <line x1="64" y1="8" x2="64" y2="248" stroke="#27272A" stroke-width="1.5" stroke-opacity="0.6" />
+  <line x1="192" y1="8" x2="192" y2="248" stroke="#27272A" stroke-width="1.5" stroke-opacity="0.6" />
+  <!-- Electric cobalt accent corner bar -->
+  <rect x="28" y="28" width="44" height="8" rx="4" fill="url(#cobaltGrad)" />
+  <!-- Geometric V + P Monogram -->
+  <path d="M56 78 L98 184 L116 184 L158 78 L134 78 L107 152 L80 78 Z" fill="#FAFAFA" />
+  <path d="M148 78 L192 78 C212 78 224 90 224 109 C224 128 212 140 192 140 L170 140 L170 184 L148 184 Z M170 96 L170 122 L190 122 C198 122 203 117 203 109 C203 101 198 96 190 96 Z" fill="url(#cobaltGrad)" />
+  <!-- Status terminal dot -->
+  <circle cx="214" cy="214" r="8" fill="#10B981" />
+</svg>
