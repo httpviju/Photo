@@ -11,6 +11,8 @@ import {
   FileCode2,
   HardDriveDownload,
   CheckCircle2,
+  GitBranch,
+  ArrowUpRight,
 } from 'lucide-react';
 import { ELECTRON_CONFIG_FILES } from '../data/portfolioData';
 
@@ -320,6 +322,101 @@ export const DesktopBuildStudio: React.FC<{ isElectronRuntime: boolean }> = ({
                 </a>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* GITHUB RELEASES UPLOAD INSTRUCTIONS (For httpviju / Photo) */}
+        <div className="mb-10 p-6 bg-[#121215] border border-[#2563EB]/40 rounded-xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#2563EB]/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-5 border-b border-[#27272A]">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-[#2563EB]/20 border border-[#2563EB]/40 flex items-center justify-center">
+                <GitBranch className="w-4 h-4 text-[#60A5FA]" />
+              </div>
+              <div>
+                <span className="font-mono-code text-xs font-semibold uppercase tracking-[0.08em] text-[#FAFAFA]">
+                  HOW TO MAKE .EXE DOWNLOAD APPEAR IN GITHUB RELEASES (HTTPVIJU / PHOTO)
+                </span>
+                <p className="text-xs text-[#A1A1AA] mt-0.5">
+                  GitHub code repository me code push hota hai, lekin "Releases" section me .exe aane ke liye release publish karni hoti hai.
+                </p>
+              </div>
+            </div>
+
+            <a
+              href="https://github.com/httpviju/Photo/releases/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-xs font-mono-code font-medium text-white flex items-center gap-1.5 shrink-0 transition-colors"
+            >
+              <span>Open GitHub New Release</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="p-4 bg-[#09090B] border border-[#27272A] rounded-lg space-y-2">
+              <div className="font-mono-code text-xs text-[#3B82F6] font-semibold">
+                STEP 01
+              </div>
+              <div className="font-display text-sm font-semibold text-[#FAFAFA]">
+                Download .EXE to PC
+              </div>
+              <p className="text-xs text-[#A1A1AA] leading-relaxed">
+                Upar diye gaye blue button se <strong className="text-white">Vijay-Portfolio-Setup.exe</strong> apne computer me save karein.
+              </p>
+            </div>
+
+            <div className="p-4 bg-[#09090B] border border-[#27272A] rounded-lg space-y-2">
+              <div className="font-mono-code text-xs text-[#3B82F6] font-semibold">
+                STEP 02
+              </div>
+              <div className="font-display text-sm font-semibold text-[#FAFAFA]">
+                Click "Create a new release"
+              </div>
+              <p className="text-xs text-[#A1A1AA] leading-relaxed">
+                GitHub me apne <strong className="text-white">Photo</strong> repository me right side <strong className="text-[#3B82F6]">"Create a new release"</strong> par click karein.
+              </p>
+            </div>
+
+            <div className="p-4 bg-[#09090B] border border-[#27272A] rounded-lg space-y-2">
+              <div className="font-mono-code text-xs text-[#3B82F6] font-semibold">
+                STEP 03
+              </div>
+              <div className="font-display text-sm font-semibold text-[#FAFAFA]">
+                Tag &amp; Drag-and-Drop
+              </div>
+              <p className="text-xs text-[#A1A1AA] leading-relaxed">
+                Tag me <code className="text-white font-mono bg-[#18181B] px-1 py-0.5 rounded">v1.0.0</code> likhein aur "Attach binaries" box me <strong className="text-white">Vijay-Portfolio-Setup.exe</strong> upload karein.
+              </p>
+            </div>
+
+            <div className="p-4 bg-[#09090B] border border-[#27272A] rounded-lg space-y-2">
+              <div className="font-mono-code text-xs text-[#10B981] font-semibold">
+                STEP 04 · COMPLETE
+              </div>
+              <div className="font-display text-sm font-semibold text-[#FAFAFA]">
+                Publish Release
+              </div>
+              <p className="text-xs text-[#A1A1AA] leading-relaxed">
+                Neeche green <strong className="text-white">"Publish release"</strong> dabayein. Turant GitHub ke sidebar me download button live ho jayega!
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-[#27272A] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#71717A] font-mono-code">
+            <div>
+              💡 AUTOMATED PIPELINE: Humne <code className="text-[#FAFAFA]">.github/workflows/release.yml</code> bhi add kar diya hai, jisse GitHub Actions automatic build karke release publish kar sake.
+            </div>
+            <a
+              href="https://github.com/httpviju/Photo/actions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#3B82F6] hover:text-[#60A5FA] flex items-center gap-1 shrink-0"
+            >
+              <span>GitHub Actions Tab</span>
+              <ArrowUpRight className="w-3 h-3" />
+            </a>
           </div>
         </div>
 

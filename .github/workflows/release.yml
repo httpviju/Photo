@@ -1,0 +1,70 @@
+name: Build & Publish Windows .EXE Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build Windows x64 Executables
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Generate Multi-Size Icons
+        run: node scripts/generate-icon.mjs
+
+      - name: Build React Application
+        run: npx vite build
+
+      - name: Package Windows Installer & Portable .EXE
+        run: npx electron-builder --win --x64
+
+      - name: Verify Generated Executables
+        shell: bash
+        run: |
+          ls -lh dist/*.exe
+          echo "Build successful! Binaries are ready to publish."
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          tag_name: ${{ github.ref_name || 'v1.0.0' }}
+          name: "Vijay Portfolio v1.0.0 (Windows 10/11 x64)"
+          body: |
+            ### 🚀 Vijay Portfolio — Standalone Windows Desktop Release v1.0.0
+            
+            This release contains the verified standalone Windows desktop applications for **Vijay Portfolio**.
+            
+            #### 📦 Included Downloads
+            - **`Vijay-Portfolio-Setup.exe`** (~115 MB): Recommended Windows NSIS Installer. Includes installation wizard, Start Menu shortcut, and Desktop icon.
+            - **`Vijay-Portfolio-Portable.exe`** (~358 MB): Standalone zero-install portable executable for USB drives or quick testing without installation.
+            
+            #### 💻 Requirements
+            - Windows 10 or Windows 11 (64-bit)
+            - No browser or Node.js installation required
+          draft: false
+          prerelease: false
+          files: |
+            dist/Vijay-Portfolio-Setup.exe
+            dist/Vijay-Portfolio-Portable.exe
+            dist/latest.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

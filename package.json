@@ -12,7 +12,7 @@
     "build": "node scripts/generate-icon.mjs && vite build && node scripts/sync-releases.mjs",
     "preview": "vite preview",
     "electron:dev": "node scripts/generate-icon.mjs && concurrently -k \"vite --port=3000\" \"wait-on tcp:3000 && cross-env ELECTRON_START_URL=http://localhost:3000 electron .\"",
-    "dist": "chmod +x scripts/bin/wine scripts/wine-uninstaller-shim.cjs && rm -rf dist/*.exe dist/*.7z dist/*.yml dist/*.blockmap dist/win-unpacked && node scripts/generate-icon.mjs && vite build && PATH=\"$PWD/scripts/bin:$PATH\" electron-builder --win --x64 && node scripts/sync-releases.mjs",
+    "dist": "node scripts/build-dist.mjs",
     "clean": "rm -rf dist release server.js",
     "lint": "tsc --noEmit"
   },
