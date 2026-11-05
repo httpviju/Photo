@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import JSZip from 'jszip';
 import {
   Terminal,
@@ -9,10 +9,29 @@ import {
   Monitor,
   PackageCheck,
   FileCode2,
+  HardDriveDownload,
+  CheckCircle2,
 } from 'lucide-react';
 import { ELECTRON_CONFIG_FILES } from '../data/portfolioData';
 
 type ConfigFileKey = keyof typeof ELECTRON_CONFIG_FILES;
+
+interface ReleaseArtifactInfo {
+  fileName: string;
+  sizeBytes?: number;
+  sizeFormatted?: string;
+  downloadUrl?: string;
+  ready: boolean;
+}
+
+interface ReleaseStatusResponse {
+  version: string;
+  appId: string;
+  productName: string;
+  arch: string;
+  setupExe: ReleaseArtifactInfo;
+  portableExe: ReleaseArtifactInfo;
+}
 
 export const DesktopBuildStudio: React.FC<{ isElectronRuntime: boolean }> = ({
   isElectronRuntime,
@@ -20,6 +39,18 @@ export const DesktopBuildStudio: React.FC<{ isElectronRuntime: boolean }> = ({
   const [selectedFile, setSelectedFile] = useState<ConfigFileKey>('electron/main.cjs');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isGeneratingZip, setIsGeneratingZip] = useState(false);
+  const [releaseStatus, setReleaseStatus] = useState<ReleaseStatusResponse | null>(null);
+
+  useEffect(() => {
+    fetch('/api/releases')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) setReleaseStatus(data);
+      })
+      .catch(() => {
+        // Fallback when running as static file inside Electron
+      });
+  }, []);
 
   const handleCopy = async (text: string, id: string) => {
     try {
@@ -54,7 +85,7 @@ export const DesktopBuildStudio: React.FC<{ isElectronRuntime: boolean }> = ({
           '3. Build the production React bundle and Windows 10/11 (x64) installer:',
           '   npm run dist',
           '',
-          '4. Output Artifacts (generated in the dist/ folder):',
+          '4. Output Artifacts (generated in the dist/ and release/ folders):',
           '   - dist/Vijay-Portfolio-Setup.exe     (Windows NSIS Installer with Desktop & Start Menu shortcuts)',
           '   - dist/Vijay-Portfolio-Portable.exe  (Zero-install standalone Portable Windows executable)',
         ].join('\n')
@@ -86,7 +117,7 @@ export const DesktopBuildStudio: React.FC<{ isElectronRuntime: boolean }> = ({
       id: 'cmd-dev',
       step: '02 · LAUNCH LOCAL DESKTOP APPLICATION',
       command: 'npm run electron:dev',
-      note: 'Generates build/icon.ico, starts Vite on port 3000, and opens the native 1280×820 Vijay Portfolio window.',
+      note: 'Generates build/icon.ico, starts Vite on port 3000, and opens the native 1280×800 Vijay Portfolio window.',
     },
     {
       id: 'cmd-dist',
@@ -97,6 +128,9 @@ export const DesktopBuildStudio: React.FC<{ isElectronRuntime: boolean }> = ({
   ];
 
   const fileKeys = Object.keys(ELECTRON_CONFIG_FILES) as ConfigFileKey[];
+  const originUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const setupDirectUrl = `${originUrl}/releases/Vijay-Portfolio-Setup.exe`;
+  const portableDirectUrl = `${originUrl}/releases/Vijay-Portfolio-Portable.exe`;
 
   return (
     <section
@@ -105,36 +139,187 @@ export const DesktopBuildStudio: React.FC<{ isElectronRuntime: boolean }> = ({
     >
       <div className="max-w-[1280px] mx-auto px-6">
         {/* Section Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
           <div>
             <div className="flex items-center gap-2.5 font-mono-code text-xs uppercase tracking-[0.08em] text-[#3B82F6] mb-3">
-              <span className="w-2 h-2 bg-[#2563EB] inline-block" />
-              <span>STANDALONE WINDOWS 10 / 11 (X64) PACKAGING ARCHITECTURE</span>
+              <span className="w-2 h-2 bg-[#10B981] inline-block" />
+              <span>RELEASE v1.0.0 · STANDALONE WINDOWS 10 / 11 (X64) EXECUTABLES</span>
             </div>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-[#FAFAFA] tracking-tight">
-              Electron &amp; NSIS <span className="font-serif-accent italic font-normal text-[#A1A1AA]">Executable</span> Pipeline
+              Verified Windows <span className="font-serif-accent italic font-normal text-[#A1A1AA]">Release</span> &amp; Build Studio
             </h2>
             <p className="mt-3 text-[#A1A1AA] max-w-2xl text-base leading-relaxed">
-              Configured to compile this portfolio into an offline-capable Windows desktop executable (
+              Download the pre-compiled Windows 10/11 (64-bit) NSIS installer (
               <code className="font-mono-code text-xs text-[#FAFAFA] bg-[#121215] px-1.5 py-0.5 border border-[#27272A]">
-                dist/Vijay-Portfolio-Setup.exe
+                Vijay-Portfolio-Setup.exe
               </code>
-              ) with desktop and Start Menu shortcuts, strict context isolation, and custom 256×256 icon resources.
+              ) or standalone portable executable directly below, or inspect the Electron packaging source files.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="/releases/Vijay-Portfolio-Setup.exe"
+              download="Vijay-Portfolio-Setup.exe"
+              className="px-4 py-2.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-xs font-mono-code font-medium text-white flex items-center gap-2 transition-colors cursor-pointer"
+            >
+              <HardDriveDownload className="w-4 h-4" />
+              <span>
+                Download Vijay-Portfolio-Setup.exe
+                {releaseStatus?.setupExe?.sizeFormatted
+                  ? ` (${releaseStatus.setupExe.sizeFormatted})`
+                  : ''}
+              </span>
+            </a>
+
             <button
               type="button"
               onClick={handleDownloadPackagingZip}
               disabled={isGeneratingZip}
-              className="px-4 py-2.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-xs font-mono-code font-medium text-white flex items-center gap-2 transition-colors cursor-pointer"
+              className="px-4 py-2.5 rounded-lg bg-[#121215] border border-[#27272A] hover:border-[#3F3F46] text-xs font-mono-code font-medium text-[#FAFAFA] flex items-center gap-2 transition-colors cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3.5 h-3.5 text-[#3B82F6]" />
               <span>
-                {isGeneratingZip ? 'Bundling Config...' : 'Download Config Bundle (.zip)'}
+                {isGeneratingZip ? 'Bundling Config...' : 'Download Source Config (.zip)'}
               </span>
             </button>
+          </div>
+        </div>
+
+        {/* VERIFIED RELEASE ASSETS PANEL (Direct .EXE Downloads & URLs) */}
+        <div className="mb-10 p-6 bg-[#121215] border border-[#27272A] rounded-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-5 border-b border-[#27272A]">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
+              <span className="font-mono-code text-xs uppercase tracking-[0.08em] text-[#FAFAFA]">
+                DIRECT RELEASE ASSETS · VERSION 1.0.0 · WINDOWS 10/11 (X64)
+              </span>
+            </div>
+            <span className="font-mono-code text-xs text-[#10B981]">
+              {releaseStatus?.setupExe?.ready
+                ? '● VERIFIED BINARIES READY FOR DOWNLOAD'
+                : '● STATIC RELEASE ARTIFACTS CONFIGURED'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Asset 1: NSIS Setup Installer */}
+            <div className="p-5 bg-[#09090B] border border-[#27272A] rounded-lg flex flex-col justify-between gap-4">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="font-mono-code text-xs font-semibold text-[#3B82F6]">
+                    NSIS WINDOWS INSTALLER (RECOMMENDED)
+                  </span>
+                  <span className="font-mono-code text-xs text-[#A1A1AA]">
+                    {releaseStatus?.setupExe?.sizeFormatted || 'x64 .EXE'}
+                  </span>
+                </div>
+                <div className="font-display text-lg font-semibold text-[#FAFAFA]">
+                  Vijay-Portfolio-Setup.exe
+                </div>
+                <p className="mt-1.5 text-xs text-[#A1A1AA] leading-relaxed">
+                  Full Windows 10/11 x64 setup wizard with custom installation directory selection, Desktop shortcut, Start Menu shortcut, and automatic uninstaller.
+                </p>
+              </div>
+
+              <div className="space-y-3 pt-2 border-t border-[#27272A]/70">
+                <div className="flex items-center justify-between gap-2 bg-[#121215] px-3 py-2 rounded border border-[#27272A]">
+                  <code className="font-mono-code text-[11px] text-[#A1A1AA] truncate">
+                    {setupDirectUrl}
+                  </code>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(setupDirectUrl, 'url-setup')}
+                    className="font-mono-code text-[11px] text-[#3B82F6] hover:text-[#60A5FA] shrink-0 flex items-center gap-1 cursor-pointer"
+                  >
+                    {copiedId === 'url-setup' ? (
+                      <>
+                        <Check className="w-3 h-3 text-[#10B981]" />
+                        <span className="text-[#10B981]">COPIED</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        <span>COPY URL</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <a
+                  href="/releases/Vijay-Portfolio-Setup.exe"
+                  download="Vijay-Portfolio-Setup.exe"
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-xs font-mono-code font-medium text-white flex items-center justify-center gap-2 transition-colors"
+                >
+                  <HardDriveDownload className="w-4 h-4" />
+                  <span>
+                    Download Vijay-Portfolio-Setup.exe
+                    {releaseStatus?.setupExe?.sizeFormatted
+                      ? ` (${releaseStatus.setupExe.sizeFormatted})`
+                      : ''}
+                  </span>
+                </a>
+              </div>
+            </div>
+
+            {/* Asset 2: Portable Executable */}
+            <div className="p-5 bg-[#09090B] border border-[#27272A] rounded-lg flex flex-col justify-between gap-4">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="font-mono-code text-xs font-semibold text-[#10B981]">
+                    STANDALONE PORTABLE EXECUTABLE
+                  </span>
+                  <span className="font-mono-code text-xs text-[#A1A1AA]">
+                    {releaseStatus?.portableExe?.sizeFormatted || 'x64 .EXE'}
+                  </span>
+                </div>
+                <div className="font-display text-lg font-semibold text-[#FAFAFA]">
+                  Vijay-Portfolio-Portable.exe
+                </div>
+                <p className="mt-1.5 text-xs text-[#A1A1AA] leading-relaxed">
+                  Zero-install single-file Windows 10/11 x64 executable. Launches immediately from any folder or USB drive without requiring administrator privileges.
+                </p>
+              </div>
+
+              <div className="space-y-3 pt-2 border-t border-[#27272A]/70">
+                <div className="flex items-center justify-between gap-2 bg-[#121215] px-3 py-2 rounded border border-[#27272A]">
+                  <code className="font-mono-code text-[11px] text-[#A1A1AA] truncate">
+                    {portableDirectUrl}
+                  </code>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(portableDirectUrl, 'url-portable')}
+                    className="font-mono-code text-[11px] text-[#3B82F6] hover:text-[#60A5FA] shrink-0 flex items-center gap-1 cursor-pointer"
+                  >
+                    {copiedId === 'url-portable' ? (
+                      <>
+                        <Check className="w-3 h-3 text-[#10B981]" />
+                        <span className="text-[#10B981]">COPIED</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        <span>COPY URL</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <a
+                  href="/releases/Vijay-Portfolio-Portable.exe"
+                  download="Vijay-Portfolio-Portable.exe"
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#121215] border border-[#27272A] hover:border-[#3B82F6] text-xs font-mono-code font-medium text-[#FAFAFA] flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Download className="w-4 h-4 text-[#3B82F6]" />
+                  <span>
+                    Download Vijay-Portfolio-Portable.exe
+                    {releaseStatus?.portableExe?.sizeFormatted
+                      ? ` (${releaseStatus.portableExe.sizeFormatted})`
+                      : ''}
+                  </span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -148,11 +333,11 @@ export const DesktopBuildStudio: React.FC<{ isElectronRuntime: boolean }> = ({
               <Monitor className="w-4 h-4 text-[#3B82F6]" />
             </div>
             <div className="font-display text-lg font-semibold text-[#FAFAFA]">
-              1280×820 Native Frame
+              1280×800 Native Frame
             </div>
             <p className="mt-2 text-sm text-[#A1A1AA] leading-relaxed">
-              Enforces <code className="font-mono-code text-xs text-[#FAFAFA]">minWidth: 960</code>,{' '}
-              <code className="font-mono-code text-xs text-[#FAFAFA]">minHeight: 640</code>, auto-hidden menu bar, single-instance lock, and native OS browser delegation.
+              Enforces <code className="font-mono-code text-xs text-[#FAFAFA]">minWidth: 900</code>,{' '}
+              <code className="font-mono-code text-xs text-[#FAFAFA]">minHeight: 600</code>, auto-hidden menu bar, single-instance lock, and native OS browser delegation.
             </p>
           </div>
 

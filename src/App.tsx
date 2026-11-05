@@ -187,20 +187,21 @@ export function App() {
 
                 {/* Primary & Secondary Rectangular Actions */}
                 <div className="pt-2 flex flex-wrap items-center gap-4">
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection('work')}
-                    className="px-6 py-3.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-xs font-mono-code font-medium uppercase tracking-[0.06em] text-white transition-colors cursor-pointer"
+                  <a
+                    href="/releases/Vijay-Portfolio-Setup.exe"
+                    download="Vijay-Portfolio-Setup.exe"
+                    className="px-6 py-3.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-xs font-mono-code font-medium uppercase tracking-[0.06em] text-white flex items-center gap-2 transition-colors cursor-pointer"
                   >
-                    Explore Selected Work
-                  </button>
+                    <span>Download Windows Installer (.EXE)</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
                   <button
                     type="button"
                     onClick={() => scrollToSection('desktop-build')}
                     className="px-6 py-3.5 rounded-lg bg-[#121215] border border-[#27272A] hover:border-[#3F3F46] text-xs font-mono-code font-medium uppercase tracking-[0.06em] text-[#FAFAFA] flex items-center gap-2 transition-colors cursor-pointer"
                   >
                     <Terminal className="w-3.5 h-3.5 text-[#3B82F6]" />
-                    <span>Windows .EXE Build Config</span>
+                    <span>All Release Assets &amp; Build Studio</span>
                   </button>
                 </div>
 
